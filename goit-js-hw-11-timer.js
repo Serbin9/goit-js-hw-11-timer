@@ -1,56 +1,55 @@
-`use strict`;
 class CountdownTimer {
   constructor({ selector, targetDate }) {
-    (this.selector = selector),
-      (this.time = targetDate),
-      (this.swatch = document.querySelector(this.selector)),
-      (this.secs = this.swatch.querySelector('span[data-value="secs"]'));
-      (this.min = this.swatch.querySelector('span[data-value="mins"]'));
-      (this.hours = this.swatch.querySelector('span[data-value="hours"]'));
-      (this.days = this.swatch.querySelector('span[data-value="days"]'));
-      // console.log(this.secs);
+    this.selector = selector;
+    this.targetDate = targetDate;
+    this.timerRef = document.querySelector(`${this.selector}`);
+    this.refs = {
+      timerDays: this.timerRef.querySelector('span[data-value="days"]'),
+      timerHours: this.timerRef.querySelector('span[data-value="hours"]'),
+      timerMins: this.timerRef.querySelector('span[data-value="mins"]'),
+      timerSecs: this.timerRef.querySelector('span[data-value="secs"]')
+    };
+    this.timerId = 0;
+    this.startTime = Date.now();
+    this.deltaTime = this.targetDate.getTime() - this.startTime > 0 ? this.targetDate.getTime() - this.startTime:0;
 
+    this.updateTimer(this.deltaTime);
+    this.start();
+  }
+
+  start() {
+    this.timerId = setInterval(() => {
+      this.startTime = Date.now();
+
+      this.deltaTime = this.targetDate.getTime() - this.startTime;
+
+      if (this.deltaTime <= 0) {
+          clearInterval(deltaTime)    
+         }
+
+      this.updateTimer(this.deltaTime);
+    }, 1000);
+  }
+
+  stop() {
+    clearInterval(this.timerId);
+    this.deltaTime = 0;
+    this.updateTimer(this.deltaTime);
+  }
+
+  updateTimer(time) {
+    this.refs.timerDays.textContent = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
+    this.refs.timerHours.textContent = this.pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+    this.refs.timerMins.textContent = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
+    this.refs.timerSecs.textContent = this.pad(Math.floor((time % (1000 * 60)) / 1000));
+  }
+
+  pad(value) {
+    return String(value).padStart(2, "0");
   }
 }
-    const timer = {
-      start() {
-        const targetDate = this.time;
-        this.timerId = setInterval(() => {
-          const currentTime = Date.now();
-          const dataTime = targetDate - currentTime > 0 ? targetDate - currentTime:0;
-          // const data = new Date(dataTime);
-          // console.log(dataTime);
-          // const days = data.getDay();
-          const days = Math.floor(dataTime / (1000 * 60 * 60 * 24));
-          // console.log(days);
-          // const hours = data.getHours();
-          const hours = Math.floor((dataTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          // const min = data.getMinutes();
-          const min = Math.floor((dataTime % (1000 * 60 * 60)) / (1000 * 60));
-          // const secs = data.getSeconds();
-          const secs = Math.floor((dataTime % (1000 * 60)) / 1000);
-          // console.log(`${hours}: ${min}: ${secs}`);
-          // function updateClockFace(){
-            this.secs.textContent = secs;
-            this.min.textContent = min;
-            this.hours.textContent = hours;
-            this.days.textContent = days;
-            
-            // console.log
-            if(dataTime <= 0 ){
-              // alert("Time out, go home");
-              clearInterval(this.timerId);
 
-              alert('Time out, go home')
-            }
-        }, 1000);
-
-      }
-    };
-
-
-
-timer.start.apply(new CountdownTimer({
-  selector: '#timer-1',
-  targetDate: new Date('Thu feb 18 2020 '),
-}));
+new CountdownTimer({
+  selector: "#timer-1",
+  targetDate: new Date("feb 26, 2020")
+});
